@@ -12,7 +12,7 @@ const UNITS = [
 
 const PURITIES = [24, 22, 21, 18];
 
-export default function PriceCard({ metal, priceUSD, usdToKwd, direction, history }) {
+export default function PriceCard({ metal, priceUSD, usdToKwd, direction }) {
   const [unit, setUnit] = useState('1');
   const [karat, setKarat] = useState(24);
   const [flicker, setFlicker] = useState('');
@@ -43,16 +43,6 @@ export default function PriceCard({ metal, priceUSD, usdToKwd, direction, histor
   const flickerClass = flicker === 'up' ? 'animate-flicker-green' : flicker === 'down' ? 'animate-flicker-red' : '';
   const directionIcon = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '●';
   const directionColor = direction === 'up' ? '#34d399' : direction === 'down' ? '#f87171' : 'rgba(255,255,255,0.2)';
-
-  // Mini sparkline from history
-  const sparkPoints = (history || []).slice(-20);
-  const sparkMin = sparkPoints.length ? Math.min(...sparkPoints) : 0;
-  const sparkMax = sparkPoints.length ? Math.max(...sparkPoints) : 1;
-  const sparkRange = sparkMax - sparkMin || 1;
-  const toSvgY = (v) => 28 - ((v - sparkMin) / sparkRange) * 24;
-  const sparkPath = sparkPoints.length > 1
-    ? sparkPoints.map((v, i) => `${i === 0 ? 'M' : 'L'}${(i / (sparkPoints.length - 1)) * 100},${toSvgY(v)}`).join(' ')
-    : null;
 
   return (
     <div className={`glass-card ${cardClass} overflow-hidden price-card-enter`}>
@@ -115,35 +105,6 @@ export default function PriceCard({ metal, priceUSD, usdToKwd, direction, histor
             </div>
           </div>
         </div>
-
-        {/* ── Sparkline (if history) ── */}
-        {sparkPath && (
-          <div className="mb-4 rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
-            <svg width="100%" height="32" viewBox="0 0 100 32" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id={`spark-fill-${metal}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={accentColor} stopOpacity="0.2" />
-                  <stop offset="100%" stopColor={accentColor} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {/* Fill area */}
-              <path
-                d={`${sparkPath} L100,32 L0,32 Z`}
-                fill={`url(#spark-fill-${metal})`}
-              />
-              {/* Line */}
-              <path
-                d={sparkPath}
-                fill="none"
-                stroke={accentColor}
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                opacity="0.7"
-              />
-            </svg>
-          </div>
-        )}
 
         {/* ── Bid / Ask ── */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
